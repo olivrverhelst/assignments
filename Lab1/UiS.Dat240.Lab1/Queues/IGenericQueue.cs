@@ -1,9 +1,8 @@
-﻿namespace UiS.Dat240.Lab1.Queues
+﻿namespace UiS.Dat240.Lab1.Queues;
+
+public interface IGenericQueue<T>
 {
-    public interface IGenericQueue<T>
-    {
-        int Length { get; }
-        void Enqueue(T value);
-        T Dequeue();
-    }
+    int Length { get; }
+    void Enqueue(T value);
+    T Dequeue();
 }

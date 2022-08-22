@@ -23,7 +23,7 @@ Under is the general program flow described.
 7. Take out element
 8. Implement IEnumerable
 9. Error if no more elements can be taken out
-10. Priority queue insert and remove
+10. Dependency injection implementation
 
 * The queue implementations should be based on a C# array.
 
@@ -39,10 +39,10 @@ To complete this lab, you would need:
 * git
   * Check if git is installed by running git in the command line with the command `git`
   * Basic instructions for installing git can be found [here](./Git.md)
-* Dotnet 5 installed. Installation instructions can be found on this link [https://dotnet.microsoft.com/download/dotnet/5.0](https://dotnet.microsoft.com/download/dotnet/5.0).
-  * Either install the latest **x64** 5.0.x version for your platform under **Build apps - SDK** → **Installers**.
+* Dotnet 5 installed. Installation instructions can be found on this link [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
+  * Either install the latest **x64** 6.0.x version for your platform under **Build apps - SDK** → **Installers**.
   * Or use the [dotnet-install scripts](https://dotnet.microsoft.com/download/dotnet/scripts)
-    * Install dotnet 5 with the command `.\dotnet-install 5.0`
+    * Install dotnet 6 with the command `.\dotnet-install 6.0`
     * For dotnet install script on windows then you might have to run the command `Set-ExecutionPolicy RemoteSigned` to enable script execution in PowerShell
 * Visual Studio Code
   * (It is possible to use other code editors, but we cannot provide help for those).
@@ -79,6 +79,17 @@ The lab already contains a C# console application in the Lab1/UiS.Dat240.Lab1 fo
 The code that greets us in the [program.cs](./UiS.Dat240.Lab1/Program.cs) file is the following:
 
 ```csharp
+// TODO: Implement
+Console.WriteLine("Hello World!");
+```
+
+And that is it. C# had a much more complicated setup before which can be found in the next part. This file is special since it does not specify a namespace and just have code. Only a single file can be written this way and all other files requires to have classes, interfaces, structs or records wrapped around them. We are also using implicit using statements here, even if `Console` is part of the `System` `namespace`, then we do not need to specify it, since System is imported by defaults in all files. More information about the [C# top level statements can be found here](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/top-level-statements).
+
+#### Old program.cs structure
+
+The `program.cs` in all version before .NET 6 looked like the following. It is nice to know that for older C# code this is what it looked like, but with .NET 6 and newer we do not have to use this format any more.
+
+```csharp
 using System;
 namespace UiS.Dat240.Lab1
 {
@@ -95,23 +106,16 @@ namespace UiS.Dat240.Lab1
 
 Here is a lot of code to do a simple thing, which is to write the string `Hello World!` to the console window. Currently it is the `Hello World` line that is interesting, which writes the lines to a console window. All you need to know for now is that `static void Main(string[] args)` is a main function which does not return anything (`void`), and expects to get a string array `string[] args` as input. The curly braces `{ }` defines a code body, and the `Main` function is the first thing that is executed in a C# program. The other things just need to be there for now and is mostly about naming things and telling the compiler what we want to use.
 
-Just a heads up, as of the next version of dotnet and C# ([dotnet 6](https://devblogs.microsoft.com/dotnet/announcing-net-6-preview-1/) and [C# 10](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-10)), then the starting template is drastically changed. Below is the new starter code which will not work for this lab, but will in November when dotnet 6 is release. (Or if you for some reason installed the dotnet 6 preview)
-
-```csharp
-Console.WriteLine("Hello World!");
-```
-(And no, it is not a mistake. The new Program.cs format removes everything else expect the Console.WriteLine).
-
 ### Console input and output
 
-The first thing you can try is to do with the code to get your feet wet are:
+The first things you can try to do with the code to get your feet wet are:
 * Manipulate the string `"Hello World"`, 
 * Add multiple `Console.WriteLine's`, 
 * Try the `Console.Write` function instead of, which does not include the new line at the end of the output.
 
 ### Command line program
 
-The first part of the lab should be to read an input from the user and handling what the user writes. The [Console.ReadLine](https://docs.microsoft.com/en-us/dotnet/api/system.console.readline?view=net-5.0) function can do this operation. After the input is read then it should be [split](https://docs.microsoft.com/en-us/dotnet/api/system.string.split?view=net-5.0) into command part and data part. The commands which should be implemented can be found in the table below. 
+The first part of the lab should be to read an input from the user and handling what the user writes. The [Console.ReadLine](https://docs.microsoft.com/en-us/dotnet/api/system.console.readline) function can do this operation. After the input is read then it should be [split](https://docs.microsoft.com/en-us/dotnet/api/system.string.split) into command part and data part. The commands which should be implemented can be found in the table below. 
 
 The command reading should read one command after another and only the `exit` command should stop this execution. `CTRL + C` and closing the terminal will also stop the program, and this is expected.
 
@@ -124,6 +128,8 @@ You wrote: "Some test value"
 You wrote the remove command
 > exit
 ```
+
+We are also going to implement an more advanced and extendable version of the command handling later in the lab with the help of dependency injection.
 
 ### Commands:
 
@@ -154,12 +160,12 @@ The FIFO queue (First in First out) implementations should use a [C# Array](http
 
 The queue should have the following functionality:
 
-| Functionality | Interface definition        | Description                                                                                                                                                                                                     |
-| ------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enqueue(item) | void Enqueue(string value); | Adds a value to the end of the queue                                                                                                                                                                            |
-| Dequeue()     | string Dequeue();           | Returns the first element or throws an exception if the queue is empty                                                                                                                                          |
+| Functionality   | Interface definition        | Description                                                                                                                                                                                                     |
+| --------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Enqueue(item)   | void Enqueue(string value); | Adds a value to the end of the queue                                                                                                                                                                            |
+| Dequeue()       | string Dequeue();           | Returns the first element or throws an exception if the queue is empty                                                                                                                                          |
 | Length { get; } | int Length { get; }         | Returns the number of elements in the queue as an integer                                                                                                                                                       |
-| Grow()        | Not defined in interfaces   | When called it will create a new array of double the size as the old, copy all elements from the old array to the new array in the same order, then it should assign the new array as the working data storage. |
+| Grow()          | Not defined in interfaces   | When called it will create a new array of double the size as the old, copy all elements from the old array to the new array in the same order, then it should assign the new array as the working data storage. |
 
 ### IStringQueue
 
@@ -232,26 +238,76 @@ For those that finds this concept cool, then it could be nice to read about a ne
 
 Create a new class with a generic parameter `T` and implement the IGenericQueue&lt;T&gt; interface and copy the ObjectQueue code. Replace all object with T and we are done. Now we should do the same with GenericQueue that we did with ObjectQueue and replace the implementation of both the StringQueue and ObjectQueue to use the new implementation. As you would see, then this is much simpler since we just create a `GenericQueue<string>` for the string queue and `GenericQueue<object>` for the object queue, and then we do not need to cast anything!
 
-### Extending the command line
+### DependencyInjection based command engine
 
-The third part of this lab is extending the command line program with the following functionality:
+For this part of the lab we are going to implement a more advanced command handler for the command line. We are going to use DependencyInjection og accomplish a more pluggable architecture which should be easy to extend with new commands. It is possible to read more about [Dependency Injection in .NET here](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) and [Some usage examples](https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection-usage).
 
-| Command name              | Description                                                                         |
-| ------------------------- | ----------------------------------------------------------------------------------- |
-| addpri {priority} {value} | Add a priority item with the given `{priority}` and `{value}` to the priority queue |
-| rempri                    | Prints the priority and value of the item with the highest priority in the queue    |
-| sizepri                   | returns the size of the priority queue                                              |
+In contrast to the examples there, then we are not going to use a host builder but we are going to create and use the DI container directly. 
 
-You might have guessed it already, but we need to implement a priority queue for this part of the lab. This should also use a C# array as a data storage and how to implement it can be found here:
+#### Creating a DI container and service provider
 
-* https://en.wikipedia.org/wiki/Binary_heap
-* https://en.wikipedia.org/wiki/Priority_queue
+```csharp
+var collection = new ServiceCollection();
 
-Also to understand the [IGenericPriorityQueue.cs](./UiS.Dat240.Lab1/Queues/IGenericPriorityQueue.cs) interface, it is probably nice to read a little about tuples:
+// Several
+collection.AddSingleton<Interface, Implementation>(...);
+// or 
+collection.AddScoped<Interface, Implementation>(...);
+// or
+collection.AddTransient<Interface, Implementation>(...);
 
-* https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples
+var provider = collection.BuildServiceProvider(true);
 
-The requirements for the priority queue are that an item with a higher priority should always be dequeued before an item with a lower priority. You do not have to guarantee that two items of the same priority are dequeued in the same order as they are enqueued, meaning that if you only insert items of the same priority, then there is no guarantee that the data structure works as a FIFO queue. 
+// getting a service registered in a DI
+
+var someValue = provider.GetService<Interface>();
+```
+
+The different `Add...` commands on the ServiceCollection have different lifetimes, which means that for Singleton, you always get the same instance when calling `GetService` on that type, while transient returns a new instance each time. Scoped is a little bit special in that it returns the same service within a scope, but the scope has to be created from the service provider first. 
+
+#### Implementation
+
+To implement the command handler, we are going to create small command classes which implements the interface `ICommandHandler`:
+
+```csharp
+public class AddHandler : ICommandHandler
+{
+  // The name of the command
+  public string Name => "CommandName";
+  // Since we are going to register the AddHandler in the dependency injection, 
+  // then we can request other service from DI in constructor parameters.
+  public AddHandler(IStringQueue stringQueue)
+  {
+    // The request service should also be stored and used later in the class
+  }
+
+  // The function to be executed when the user write the command name
+  public void Handle(string args)
+  {
+    // Implement command handler functionality.
+  }
+}
+```
+
+One command handler should be created for each command specified in the table further up, with maybe the exception of the `exit` command. It is also important to register the queue implementation in the dependency injection so that the handlers can access the queue. The tests is also designed in a way that it expects to find all the different queue implementations in the DependencyInjection so remember to register all of them. For the generic `IGenericQueue` it expects to find an `IGenericQueue<string>`
+
+#### Execution engine
+
+For the execution of the commands we are going to use something similar to the following code: 
+
+* Request all commands from the service provider with `provider.GetServices<ICommandHandler>()`
+* In a loop
+  * Write premable for the command line like `> ` or `cmd>` or something similar
+  * Read input from command line with `Console.ReadLine();`
+  * Split the command on the first space
+  * If the user writes `exit` then exit the loop, this could be implemented as a command, but that is a greater challenge.
+  * Check all commands if it contains a command with the Name equal to tje first part of the user input
+    * If it is found, run the Handle function on the ICommandHandler with the rest of the user input
+    * If it is not found, print an error that the command is not found.
+
+#### Notes
+
+DI is going to be used extensively in the next two labs and the project so it is a good idea to figure out how it works properly.
 
 ### IEnumerable
 
