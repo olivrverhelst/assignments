@@ -33,7 +33,7 @@ To complete this lab, you would need:
 
 * A command line program
   * Windows: Preferably powershell (already installed). 
-    * A nice shell for powershell is [Windows Terminal](https://www.microsoft.com/nb-no/p/windows-terminal/9n0dx20hk701) (might be installed with windows)
+    * A nice shell for powershell is [Windows Terminal](https://www.microsoft.com/nb-no/p/windows-terminal/9n0dx20hk701) (might be installed with windows) [Alternative link to windows terminal](https://github.com/microsoft/terminal)
   * Linux: A terminal is already installed.
   * Mac: A terminal is already installed. 
 * git
