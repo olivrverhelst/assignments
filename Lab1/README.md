@@ -39,7 +39,7 @@ To complete this lab, you would need:
 * git
   * Check if git is installed by running git in the command line with the command `git`
   * Basic instructions for installing git can be found [here](./Git.md)
-* Dotnet 5 installed. Installation instructions can be found on this link [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
+* .NET 6.0 installed. Installation instructions can be found on this link [https://dotnet.microsoft.com/download/dotnet/6.0](https://dotnet.microsoft.com/download/dotnet/6.0).
   * Either install the latest **x64** 6.0.x version for your platform under **Build apps - SDK** → **Installers**.
   * Or use the [dotnet-install scripts](https://dotnet.microsoft.com/download/dotnet/scripts)
     * Install dotnet 6 with the command `.\dotnet-install 6.0`
