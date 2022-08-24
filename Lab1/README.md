@@ -68,7 +68,7 @@ After the installation it could be a nice thing to log out and in again or just 
 
 ### Opening the lab in VSCode
 
-To start this lab, please navigate to the Lab1 folder and open it in VSCode. When OmniSharp prompts you for which project to choose please select Lab1.sln. This will be the same for all the labs, choose the .sln file.
+To start this lab, please navigate to the Lab1 folder and open it in VSCode. If OmniSharp prompts you for which project to choose please select Lab1.sln. You can also go to `View -> Command Palette` (Or the short cut for it), and type `OmniSharp: select project` and verify that Lab1.sln is selected. This will be the same for all the labs, choose the .sln file.
 
 There might by a description of the [folder structure](./FolderStructure.md) for Lab1.
 
@@ -105,6 +105,25 @@ namespace UiS.Dat240.Lab1
 ```
 
 Here is a lot of code to do a simple thing, which is to write the string `Hello World!` to the console window. Currently it is the `Hello World` line that is interesting, which writes the lines to a console window. All you need to know for now is that `static void Main(string[] args)` is a main function which does not return anything (`void`), and expects to get a string array `string[] args` as input. The curly braces `{ }` defines a code body, and the `Main` function is the first thing that is executed in a C# program. The other things just need to be there for now and is mostly about naming things and telling the compiler what we want to use.
+
+### Anatomy of a C# file
+
+When we write that you should write a class, you can either write it directly inside the program.cs folder or preferably create a new file with the same name as the class/interface you intend to put into it, and have the code there. The only important thing is that all csharp files except the program.cs file should have a namespace declaration at the top, but after any using statements. like this:
+
+```csharp
+// Here goes using statements
+
+namespace UiS.Dat240.Lab1;
+
+// The rest of your code here like classes
+
+public class MyClass
+{
+  
+}
+```
+
+The full name of the MyClass will in this case be `UiS.Dat240.Lab1.MyClass`.
 
 ### Console input and output
 
