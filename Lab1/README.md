@@ -8,7 +8,7 @@
 
 ## Overview
 
-Please go through the [signup process for QuickFeed](https://github.com/dat240-2022/info/signup.md) before starting the lab.
+Please go through the [signup process for QuickFeed](https://github.com/dat240-2022/info/blob/main/signup.md) before starting the lab.
 
 ### Program flow
 
@@ -134,7 +134,7 @@ The first things you can try to do with the code to get your feet wet are:
 
 ### Command line program
 
-The first part of the lab should be to read an input from the user and handling what the user writes. The [Console.ReadLine](https://docs.microsoft.com/en-us/dotnet/api/system.console.readline) function can do this operation. After the input is read then it should be [split](https://docs.microsoft.com/en-us/dotnet/api/system.string.split) into command part and data part. The commands which should be implemented can be found in the table below. 
+The first part of the lab should be to read an input from the user and handling what the user writes. The [Console.ReadLine](https://docs.microsoft.com/en-us/dotnet/api/system.console.readline) function can do this operation. After the input is read then it should be [split](https://docs.microsoft.com/en-us/dotnet/api/system.string.split) into command part and data part. The commands which should be implemented can be found in the table below. In this part you only need to implement simple logic for reading in from the command line and printing some output. You do not need to have the full implementation since that should happen later in the DependencyInjection part of this lab.
 
 The command reading should read one command after another and only the `exit` command should stop this execution. `CTRL + C` and closing the terminal will also stop the program, and this is expected.
 
@@ -176,6 +176,8 @@ The easiest to write a new test is to copy one of the tests and make some change
 The second part of the lab is implementing three different versions of a queue. The three queues are [IStringQueue](./UiS.Dat240.Lab1/Queues/IStringQueue.cs), [IObjectQueue](./UiS.Dat240.Lab1/Queues/IObjectQueue.cs) and finally [IGenericQueue<T>](./UiS.Dat240.Lab1/Queues/IGenericQueue.cs). You should first implement the IStringQueue, since then it would be much easier to implement the last two queues as well. Then the object queue should be implemented and lastly, we are going to implement the GenericQueue. 
 
 The FIFO queue (First in First out) implementations should use a [C# Array](https://docs.microsoft.com/en-us/dotnet/api/system.array?view=net-5.0) as the data storage. C# arrays are fixed size which means the code must handle automatic growth of the array to accommodate more elements. [Dynamic Arrays](https://en.wikipedia.org/wiki/Dynamic_array) and [Circular buffers](https://en.wikipedia.org/wiki/Circular_buffer) can be nice starting points for the queue implementation.
+
+**Only use the an array, integers, functions, loops and checks like if for the internal of the queues. You should not use anything from the System.Linq.* namespace for the queue implementation. This is to get to know C# without using all the advanced features that C# has to offer**
 
 The queue should have the following functionality:
 
@@ -236,10 +238,10 @@ Do the same for the `ObjectQueue` as the `StringQueue` and add it to the [TestSu
 
 ### Clean up
 
-Now we have two queues which is twice the amount of code to maintain! We also previously mentioned that the `ObjectQueue` can store anything, including strings, so why have two? The next part is creating an encapsulation class or wrapper class which implements the `IStringQueue` interface by using the `ObjectQueue` instead of the concrete implementation.
+Now we have two queues which is twice the amount of code to maintain! We also previously mentioned that the `ObjectQueue` can store anything, including strings, so why have two? The next part is creating an encapsulation class or wrapper class which implements the `IStringQueue` interface by using the `ObjectQueue` instead of the `StringQueue` class we just created.
 
-* Change the existing `StringQueue` or create a new class by creating a new `ObjectQueue` field and assigning it an empty `ObjectQueue`. 
-* Change the Enqueue, Dequeue and Size to call the `ObjectQueue` implementations instead
+* Change the existing `StringQueue` or create a new class, then create a  `ObjectQueue` field and assigning it an empty `ObjectQueue` like `private ObjectQueue internalQueue = new ObjectQueue();`. 
+* Change or reimplement the Enqueue, Dequeue and Size to call the `ObjectQueue` field instead of the implementations we created for the `StringQueue` class.
 * The Grow function can be deleted since that is handle by the `ObjectQueue`
 
 One thing to note is that Enqueue is easy to implement, it is just calling the `ObjectQueue.Enqueue` function, but the Dequeue is harder. In C# all types are automatically (implicit) cast to a less specific type (for instance a base class or an interface). This means that since everything in C# is an object, then the string is implicitly cast to the object type. The other way around is not true since we do not know what the object should be. More information about casting can be found at the following links:
@@ -266,38 +268,100 @@ In contrast to the examples there, then we are not going to use a host builder b
 #### Creating a DI container and service provider
 
 ```csharp
-var collection = new ServiceCollection();
+// Example of functionality available to the DependencyInjection container
 
-// Several
-collection.AddSingleton<Interface, Implementation>(...);
-// or 
+// Creating a new collection/list of recipes on how to create classes. 
+var collection = new ServiceCollection(); // This is available in the Microsoft.Extensions.DependencyInjection namespace
+
+//These are the only one needed for lab 1
+// Registering an class `Implementation` as an singleton in the ServiceCollection container 
+// Singleton means that you get the same instance of a class not matter how many times you request it
+collection.AddSingleton<Implementation>();
+// Registering an interface `Interface` in the container, which uses the class `Implementation` to implement it
+collection.AddSingleton<Interface, Implementation>();
+
+// Same as above, but a new instance is created for each scope you create. 
+collection.AddScoped<Implementation>();
 collection.AddScoped<Interface, Implementation>(...);
-// or
-collection.AddTransient<Interface, Implementation>(...);
 
+// Same as above, but you get a new instance each time you as of the type.
+collection.AddTransient<Implementation>();
+collection.AddTransient<Interface, Implementation>();
+
+// Create an IServiceProvider for the list of recipes, that you can ask to get the services from.
 var provider = collection.BuildServiceProvider(true);
 
-// getting a service registered in a DI
-
+// Requesting a service from the ServiceProvider
 var someValue = provider.GetService<Interface>();
+
+// Requesting services from the dependency injection container:
+
+// For 
+collection.AddSingleton<Implementation>();
+collection.AddScoped<Implementation>();
+collection.AddTransient<Implementation>();
+
+// Request it with
+provider.GetService<Implementation>();
+
+// For
+collection.AddSingleton<Interface, Implementation>();
+collection.AddScoped<Interface, Implementation>();
+collection.AddTransient<Interface, Implementation>();
+
+// Request them with
+provider.GetService<Interface>();
+
+// Also as part of an class constructor you can request services from DependencyInjection 
+// as long as the class is also registered in dependency injection.
+
+collection.AddSingleton<SomeClass>(); // Registering all the different dependencies in the collection
+collection.AddSingleton<HashSet<string>>();
+collection.AddSingleton<ICollection<string>, List<string>>();
+
+public class SomeClass
+{
+  private readonly ICollection<string> someList;
+  private readonly HashSet<string> someList;
+  
+  // Requesting the different services from the dependency injection container via the constructor properties.
+  public SomeClass(ICollection<string> someList, HashSet<string> hashSet)
+  {
+    this.someList = someList;
+    this.hashSet = hashSet;
+  }
+}
+
+// Then somewhere else you could request like the following line, and all the constructor 
+// arguments would be initialized for you, since all of the is registered in the DI container
+var someClass = provider.GetService<SomeClass>();
 ```
+
+You are supposed to substitute `Implementation` with a class thatd you or someone else have create, and `Interface` with and interface implemented by the `Implementation` class.
+
+It could be a good idea to create and configure the service collection inside the `TestSubmissions` class, where you are supposed to return it from the test. And where you need to use it then just call `TestSubmissions.CreateServiceProvider()`
 
 The different `Add...` commands on the ServiceCollection have different lifetimes, which means that for Singleton, you always get the same instance when calling `GetService` on that type, while transient returns a new instance each time. Scoped is a little bit special in that it returns the same service within a scope, but the scope has to be created from the service provider first. 
 
 #### Implementation
 
-To implement the command handler, we are going to create small command classes which implements the interface `ICommandHandler`:
+To implement the command handler, we are going to create small command classes which implements the interface `ICommandHandler`. An example of the AddHandler could be something like the following.
 
 ```csharp
+// Example of setup of the AddHandler class
 public class AddHandler : ICommandHandler
 {
   // The name of the command
-  public string Name => "CommandName";
+  public string Name => "add";
+
+  private readonly IStringQueue stringQueue;
   // Since we are going to register the AddHandler in the dependency injection, 
-  // then we can request other service from DI in constructor parameters.
+  // then we can request other service from DI as constructor parameters.
+  // This is the constructor of the class
   public AddHandler(IStringQueue stringQueue)
   {
     // The request service should also be stored and used later in the class
+    this.stringQueue = stringQueue;
   }
 
   // The function to be executed when the user write the command name
@@ -308,7 +372,7 @@ public class AddHandler : ICommandHandler
 }
 ```
 
-One command handler should be created for each command specified in the table further up, with maybe the exception of the `exit` command. It is also important to register the queue implementation in the dependency injection so that the handlers can access the queue. The tests is also designed in a way that it expects to find all the different queue implementations in the DependencyInjection so remember to register all of them. For the generic `IGenericQueue` it expects to find an `IGenericQueue<string>`
+One command handler should be created for each command specified in the table further up, with maybe the exception of the `exit` command. It is also important to register the queue implementations in the dependency injection so that the handlers can access the queue. The tests is also designed in a way that it expects to find all the different queue implementations in the DependencyInjection so remember to register all of them. For the generic `IGenericQueue` it expects to find an `IGenericQueue<string>`
 
 #### Execution engine
 
@@ -316,7 +380,7 @@ For the execution of the commands we are going to use something similar to the f
 
 * Request all commands from the service provider with `provider.GetServices<ICommandHandler>()`
 * In a loop
-  * Write premable for the command line like `> ` or `cmd>` or something similar
+  * Write preamble for the command line like `> ` or `cmd>` or something similar
   * Read input from command line with `Console.ReadLine();`
   * Split the command on the first space
   * If the user writes `exit` then exit the loop, this could be implemented as a command, but that is a greater challenge.
