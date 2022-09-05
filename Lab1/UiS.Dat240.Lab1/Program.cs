@@ -96,8 +96,6 @@ public class StringQueue : IStringQueue
             
         }
         
-            //throw new NotImplementedException();
-        
     }
     public string Dequeue()
     {
