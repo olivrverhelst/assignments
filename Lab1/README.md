@@ -374,6 +374,10 @@ public class AddHandler : ICommandHandler
 
 One command handler should be created for each command specified in the table further up, with maybe the exception of the `exit` command. It is also important to register the queue implementations in the dependency injection so that the handlers can access the queue. The tests is also designed in a way that it expects to find all the different queue implementations in the DependencyInjection so remember to register all of them. For the generic `IGenericQueue` it expects to find an `IGenericQueue<string>`
 
+The RemHandler should also handle the exception throw by the queue with a try catch, and write "queue is empty", if the user tries to remove an empty element from the queue.
+
+The tests also expects the AddCommandHandler to only receive the part after the command name from the user input, an example would be that if the user writes `add some string`, then only `some string` should be given to CommandHandler `Handle` function.
+
 #### Execution engine
 
 For the execution of the commands we are going to use something similar to the following code: 
