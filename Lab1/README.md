@@ -284,7 +284,9 @@ collection.AddSingleton<Interface, Implementation>();
 collection.AddScoped<Implementation>();
 collection.AddScoped<Interface, Implementation>(...);
 
-// Same as above, but you get a new instance each time you as of the type.
+// Same as above, but you get a new instance each time you call provider.GetService of the type you specified. 
+// Meaning that if you register a list, you would get a new list each time, instead of singleton where the items 
+// would be shared between everyone that requests them
 collection.AddTransient<Implementation>();
 collection.AddTransient<Interface, Implementation>();
 
