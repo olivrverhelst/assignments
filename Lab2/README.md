@@ -13,8 +13,8 @@ To update your local lab folder to the updated assignments repo then make sure o
 1. Run `git remote -v` while standing in your labs folder.
 2. Here you should see that the two origin is pointing to your labs at GitHub
 3. There should also be two that is named something like `course-assignments`, `assignments` or `labs` which points to `https://github.com/dat240-2022/assignments` or `git@github.com:dat240-2022/assignments.git` depending on if you used HTTPS or SSH when setting up the repo.
-   1. If this other remote is missing then please investigate how to set it up here: `https://github.com/dat240-2022/info/blob/master/lab-submission.md`, but it should be as simple as running `git remote add course-assignments https://github.com/dat240-2022/assignments` for the https variant
-4. pull the changes from the other remote with this command `git pull {other-remote-name} master`, and replace `{other-remote-name}` with the name of the other remote which is not named origin you had in `git remote -v`.
+   1. If this other remote is missing then please investigate how to set it up here: `https://github.com/dat240-2022/info/blob/main/lab-submission.md`, but it should be as simple as running `git remote add course-assignments https://github.com/dat240-2022/assignments` for the https variant
+4. pull the changes from the other remote with this command `git pull {other-remote-name} main`, and replace `{other-remote-name}` with the name of the other remote which is not named origin you had in `git remote -v`.
 
 ## An asp.net core ordering system
 
