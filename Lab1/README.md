@@ -284,7 +284,9 @@ collection.AddSingleton<Interface, Implementation>();
 collection.AddScoped<Implementation>();
 collection.AddScoped<Interface, Implementation>(...);
 
-// Same as above, but you get a new instance each time you as of the type.
+// Same as above, but you get a new instance each time you call provider.GetService of the type you specified. 
+// Meaning that if you register a list, you would get a new list each time, instead of singleton where the items 
+// would be shared between everyone that requests them
 collection.AddTransient<Implementation>();
 collection.AddTransient<Interface, Implementation>();
 
@@ -374,6 +376,10 @@ public class AddHandler : ICommandHandler
 
 One command handler should be created for each command specified in the table further up, with maybe the exception of the `exit` command. It is also important to register the queue implementations in the dependency injection so that the handlers can access the queue. The tests is also designed in a way that it expects to find all the different queue implementations in the DependencyInjection so remember to register all of them. For the generic `IGenericQueue` it expects to find an `IGenericQueue<string>`
 
+The RemHandler should also handle the exception throw by the queue with a try catch, and write "queue is empty", if the user tries to remove an empty element from the queue.
+
+The tests also expects the AddCommandHandler to only receive the part after the command name from the user input, an example would be that if the user writes `add some string`, then only `some string` should be given to CommandHandler `Handle` function.
+
 #### Execution engine
 
 For the execution of the commands we are going to use something similar to the following code: 
@@ -396,4 +402,24 @@ DI is going to be used extensively in the next two labs and the project so it is
 
 Since we now have some nice data structures, then it would be nice if we could look through them without having to dequeue and re enqueue all the different elements of the queue. It is possible to do that, but it would require a lot of processing. The way we are going to do this is by using the standard C# way of looking through data structures, which is the [foreach](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/statements/iteration-statements#the-foreach-statement) way. As you also can read from the link is that the foreach statement work on a `type` that implements the [IEnumerable](https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable?view=net-5.0) or the generic version [IEnumerable<T>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1?view=net-5.0) interfaces. A `type` in this case is any `type` that can implement an interface which are `class`, `struct` or `record` constructs.
 
-The `IEnumerable<T>` should be implemented for the `IGenericQueue<T>` for the tests to pass. There are two ways of creating the enumerable code, where one of them is returning a [IEnumerator<T>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1?view=net-5.0) which navigates through each element one by one, and there is the [yield return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/yield). Follow the examples on the links to implement the IEnumerable so the code can be used in a foreach statement. The yield way is probably easier to implement, but yield is just making the compiler implement an IEnumerator for us which is nice.
+The `IEnumerable<T>` should be implemented for the class that implements the `IGenericQueue<T>` interface for the tests to pass. A class can have several interfaces implemented at once, as well as an interface can derive from several interfaces. There are two ways of creating the enumerable code, where one of them is returning a [IEnumerator<T>](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerator-1?view=net-5.0) which navigates through each element one by one, and there is the [yield return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/yield). Follow the examples on the links to implement the IEnumerable so the code can be used in a foreach statement. The yield way is probably easier to implement, but yield is just making the compiler implement an IEnumerator for us which is nice.
+
+### Approval script
+
+1. Start the program with `dotnet run`
+2. Run the following commands:
+   1. `add bob`
+   2. `add this message`
+   3. `size`
+      1. Should print 2
+   4. `rem`
+   5. `size`
+      1. Should print 1
+   6. `rem`
+   7. `rem`
+      1. Should print `queue is empty` and not crash
+   8. `size`
+      1. Should print 0
+3. Explain the inner workings of the queue
+4. Explain how you did dependency injection
+5. Other things that the TA might ask about the code
