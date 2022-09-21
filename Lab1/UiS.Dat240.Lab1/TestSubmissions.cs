@@ -14,8 +14,8 @@ public static class TestSubmissions
     // return an instance of your implementation
     public static IStringQueue CreateStringQueue()
     {
-        // TODO: Implement
-        throw new NotImplementedException();
+        return new StringQueue();
+        //throw new NotImplementedException();
     }
 
     public static IObjectQueue CreateObjectQueue()
