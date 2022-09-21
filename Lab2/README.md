@@ -13,8 +13,8 @@ To update your local lab folder to the updated assignments repo then make sure o
 1. Run `git remote -v` while standing in your labs folder.
 2. Here you should see that the two origin is pointing to your labs at GitHub
 3. There should also be two that is named something like `course-assignments`, `assignments` or `labs` which points to `https://github.com/dat240-2022/assignments` or `git@github.com:dat240-2022/assignments.git` depending on if you used HTTPS or SSH when setting up the repo.
-   1. If this other remote is missing then please investigate how to set it up here: `https://github.com/dat240-2022/info/blob/master/lab-submission.md`, but it should be as simple as running `git remote add course-assignments https://github.com/dat240-2022/assignments` for the https variant
-4. pull the changes from the other remote with this command `git pull {other-remote-name} master`, and replace `{other-remote-name}` with the name of the other remote which is not named origin you had in `git remote -v`.
+   1. If this other remote is missing then please investigate how to set it up here: `https://github.com/dat240-2022/info/blob/main/lab-submission.md`, but it should be as simple as running `git remote add course-assignments https://github.com/dat240-2022/assignments` for the https variant
+4. pull the changes from the other remote with this command `git pull {other-remote-name} main`, and replace `{other-remote-name}` with the name of the other remote which is not named origin you had in `git remote -v`.
 
 ## An asp.net core ordering system
 
@@ -34,6 +34,8 @@ Please read the following page for how to work with [ASP.NET Core Razor page](ht
 
 * [Asp.net core Fundamentals](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/)
 * [Dependency Injection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection)
+
+There is also a note later in the lab about .NET 6 and older versions of .NET, since they changed the default template. If you look on some old csharp asp.net core examples then please make sure to read the note first!
 
 ## Building a food ordering system
 
@@ -93,13 +95,122 @@ The different scenarios should be separate tests, since else it is hard to know 
 
 ### DependencyInjection (DI and DI Container)
 
-The QuickFeed tests for this lab are based on what is registered in the dependency injection container. The `Startup.Configure` method is responsible for doing dependency injection, and it is possible to read more about dependency injection [here.](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection).
+The QuickFeed tests for this lab are based on what is registered in the dependency injection container. In the program file, the `builder.Services...` calls are responsible for doing dependency injection, and it is possible to read more about dependency injection [here.](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection). This is the same dependency injection container we used in Lab1.
 
 The tests expects that the following is registered and working properly
 
 * ShopContext which should inherit from an EF Core DbContext
 * IFoodItemValidator which should validate a food item in accordance with the rules described under validation
 * IFoodItemProvider which should support the standard [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations
+
+### Note about .NET 6 and older versions
+
+In older version of .NET the primary asp.net core setup code was split between the following two files:
+
+> Program.cs
+```csharp
+   public class Program
+   {
+      public static void Main(string[] args)
+      {
+         CreateHostBuilder(args).Build().Run();
+      }
+
+      public static IHostBuilder CreateHostBuilder(string[] args) =>
+         Host.CreateDefaultBuilder(args)
+               .ConfigureWebHostDefaults(webBuilder =>
+               {
+                  webBuilder.UseStartup<Startup>();
+               });
+   }
+```
+
+> Startup.cs
+```csharp
+public class Startup
+   {
+      public Startup(IConfiguration configuration)
+      {
+         Configuration = configuration;
+      }
+
+      public IConfiguration Configuration { get; }
+
+      // This method gets called by the runtime. Use this method to add services to the container.
+      public void ConfigureServices(IServiceCollection services)
+      {
+         services.AddRazorPages();
+      }
+
+      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+      public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+      {
+         if (env.IsDevelopment())
+         {
+               app.UseDeveloperExceptionPage();
+         }
+         else
+         {
+               app.UseExceptionHandler("/Error");
+               // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+               app.UseHsts();
+         }
+
+         app.UseHttpsRedirection();
+         app.UseStaticFiles();
+
+         app.UseRouting();
+
+         app.UseAuthorization();
+
+         app.UseEndpoints(endpoints =>
+         {
+               endpoints.MapRazorPages();
+         });
+      }
+   }
+```
+
+This maps to the current format in this way:
+
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+//// This is the ConfigureServices function from Startup.cs. Instead of using 
+//// `IServiceCollection services` directly we access it from builder.Services. 
+//// `builder.Services` is an IServiceCollection, the same we used in lab1
+builder.Services.AddRazorPages();
+
+//// This is the end of ConfigureServices and the builder.Build() from the program.cs comes after
+
+var app = builder.Build();
+
+//// This is the part of the Configure method from the Startup.cs file
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapRazorPages();
+
+//// This is the end of the configure method and the Run part from the program.cs file comes after
+
+app.Run();
+```
 
 ### Async Await
 
