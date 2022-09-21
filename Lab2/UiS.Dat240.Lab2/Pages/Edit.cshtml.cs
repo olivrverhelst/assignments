@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
+// kommentarer
 namespace UiS.Dat240.Lab2.Pages;
 
 public class EditModel : PageModel
