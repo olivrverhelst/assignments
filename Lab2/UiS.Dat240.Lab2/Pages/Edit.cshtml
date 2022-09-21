@@ -1,0 +1,25 @@
+@page "{id:int?}"
+@model UiS.Dat240.Lab2.Pages.EditModel
+@{
+    ViewData["Title"] = "Edit";
+}
+<h1>Edit</h1>
+@foreach (var item in Model.validator)
+{
+    <p style="color: red; display: inline;">@item, </p>
+}
+<form name="foodItem" method="POST">
+    <label for="fname">Name:</label>
+    <input for="fname" type="text" name="name" asp-for="foodItem.Name">
+    <label for="fdescription">Description:</label>
+    <input for="fdescription" type="text" name="description" asp-for="foodItem.Description">
+    <label for="fprice">Price:</label>
+    <input for="fprice" type="number" step="0.01" name="price" asp-for="foodItem.Price">
+    <label for="ftime">CookTime:</label>
+    <input for="ftime" type="text" name="cooktime" asp-for="foodItem.CookTime">
+    <button>Submit</button>
+
+</form>
+<div>
+    <a asp-page="./Index">Back to index</a>
+</div>

@@ -1,0 +1,23 @@
+@page
+@model UiS.Dat240.Lab2.Pages.AddModel
+@{
+    ViewData["Title"] = "Add items";
+}
+
+<h1>Add</h1>
+@foreach (var item in Model.validator)
+{
+    <p style="color: red; display: inline;">@item, </p>
+}
+
+<form name="foodItem" method="POST">
+    <label for="fname">Name:</label>
+    <input for="fname" type="text" name="Name">
+    <label for="fdescription">Description:</label>
+    <input for="fdescription" type="text" name="Description">
+    <label for="fprice">Price:</label>
+    <input for="fprice" type="number" step="0.01" name="Price">
+    <label for="ftime">CookTime:</label>
+    <input for="ftime" type="text" name="Cooktime">
+    <button>Submit</button>
+</form>

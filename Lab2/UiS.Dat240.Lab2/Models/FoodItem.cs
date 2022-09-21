@@ -1,12 +1,16 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore;
+using System.IO;
 
-namespace UiS.Dat240.Lab2;
-
-public class FoodItem
+namespace UiS.Dat240.Lab2
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public double Price { get; set; }
-    public int CookTime { get; set; }
+    public class FoodItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public double Price { get; set; }
+        public int CookTime { get; set; }
+    }
+
 }
